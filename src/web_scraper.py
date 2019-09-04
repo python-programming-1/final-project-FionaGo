@@ -1,40 +1,52 @@
 import requests
-from bs4 import BeautifulSoup
-import os
-import warnings
-warnings.filterwarnings("ignore")
+import lxml.html as lh
+import pandas as pd
 
+# websites with GMAT scores by school by ranking
+url = 'https://www.mbacrystalball.com/gmat/gmat-average-score'
 
-# starting URL
-url = 'https://mitsloan.mit.edu/mba/admissions/class-2020-profile'
-res = requests.get(url)
-res.raise_for_status()
+#Create a handle, page, to handle the contents of the website
+page = requests.get(url)
+#Store the contents of the website under doc
+doc = lh.fromstring(page.content)
+#Parse data that are stored between <tr>..</tr> of HTML
+tr_elements = doc.xpath('//tr')
 
-# # let's only pull 10 URLs
-# for i in range(10):
-#
-# 	res = requests.get(url)
-#
-# 	# check the status
-# 	res.raise_for_status()
-#
-# 	# find the source URL of the image from the starting URL
-# 	soup = BeautifulSoup(res.text)
-# 	comic_div = soup.select('picture.item-comic-image')
-# 	image_url = comic_div[0].contents[0].attrs['src']
-# 	image_res = requests.get(image_url)
-# 	image_res.raise_for_status()
-#
-# 	# save the image in chunk, then close it
-# 	image_file = open(os.path.basename(image_url), 'wb')
-# 	for chunk in image_res.iter_content(100000):
-# 		image_file.write(chunk)
-# 	image_file.close()
-#
-# 	# find the previous URL then rewrite the starting URL
-# 	prev_div = soup.select('div .gc-calendar-nav__previous')
-# 	prev_url= prev_div[0].contents[3].attrs['href']
-# 	url = 'https://www.gocomics.com' + prev_url
-#
-# 	# print the latest URLs
-# 	print(url)
+#Create empty list
+col=[]
+i=0
+
+#For each row, store each first element (header) and an empty list
+for t in tr_elements[0]:
+    i+=1
+    name=t.text_content()
+    #print ('%d:"%s"'%(i,name))
+    col.append((name,[]))
+
+# Since out first row is the header, data is stored on the second row onwards
+for j in range(1, len(tr_elements)):
+    # T is our j'th row
+    T = tr_elements[j]
+    # If row is not of size 3, the //tr data is not from our table
+    if len(T) != 3:
+        break
+    # i is the index of our column
+    i = 0
+    # Iterate through each element of the row
+    for t in T.iterchildren():
+        data = t.text_content()
+        # Check if row is empty
+        if i > 0:
+            # Convert any numerical value to integers
+            try:
+                data = int(data)
+            except:
+                pass
+        # Append the data to the empty list of the i'th column
+        col[i][1].append(data)
+        # Increment i for the next column
+        i += 1
+
+gmat_score_dict = {title:column for (title,column) in col}
+gmat_score_df = pd.DataFrame(gmat_score_dict)
+print(gmat_score_df)
