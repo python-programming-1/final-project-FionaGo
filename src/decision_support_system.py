@@ -4,7 +4,7 @@ import pandas as pd
 
 def main():
     gmat_score_df = gmat_requirements()
-    print(gmat_score_df)
+    #print(gmat_score_df)
 
     school_ranking = gmat_score_df['school_ranking']
 
@@ -18,6 +18,7 @@ def main():
 
     print(admission_requirements_by_school)
 
+    decision_support(gmat_score_df)
 
 def gmat_requirements():
     # websites with GMAT scores by school by ranking
@@ -92,6 +93,27 @@ def gpa_requirements(df, school_ranking, avg_GPA):
 
     return df
 
+
+def decision_support(df):
+    applicant_gmat_input = int(input(
+        "Welcome! Please type your GMAT score (0 - 800)!\n"
+    ))
+
+    gmat_query = applicant_gmat_input
+    df = df.query('average_GMAT_score <= %d' % gmat_query)
+
+    print("Here is the list of schools you can consider based on your GMAT score!\n",  df)
+
+    applicant_gpa_input = float(input(
+        "Again! Please type your GPA (0.0-4.0)!\n"
+    ))
+
+    gpa_query = applicant_gpa_input
+    df = df.query('avg_GPA <= %d' % gpa_query)
+
+    print("Here is the list of schools you can consider based on your GMAT and GPA!\n", df)
+
+    return df
 
 if __name__ == "__main__":
     main()
