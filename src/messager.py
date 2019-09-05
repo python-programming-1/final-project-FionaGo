@@ -11,13 +11,13 @@ import random
 
 
 #twilio account
-account_id = 'AC33a7892b43b1ff505f315d993bf05efe'
-auth_token = '381320886ec3e065ea40b59f63300ef8'
+account_id = 'xxx'
+auth_token = 'xxx'
 tw_client = twilio_client(account_id, auth_token)
 
 #reddit account
-reddit = praw.Reddit(client_id='vVItrDIoaEtIYg',
-                     client_secret='y1A91trMdu9JHzwGqGOijyQJ3S4',
+reddit = praw.Reddit(client_id='xxx',
+                     client_secret='xxx',
                      grant_type='client_credentials',
                      user_agent='mytestscript/1.0')
 
@@ -32,6 +32,6 @@ print(_message)
 
 message = tw_client.messages.create(
         body= _message,
-        from_='+18317099945',
-        to='+14083483260')
+        from_='+xxx',
+        to='+xxx')
 
