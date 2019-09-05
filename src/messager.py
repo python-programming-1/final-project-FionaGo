@@ -32,6 +32,6 @@ print(_message)
 
 message = tw_client.messages.create(
         body= _message,
-        from_='+18317099945',
-        to='+14083483260')
+        from_='+xxx',
+        to='+xxx')
 
